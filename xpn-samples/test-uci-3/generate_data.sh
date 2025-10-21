@@ -22,7 +22,7 @@ while [ $(date +%s) -lt $endTime ]; do
     fi
 
     echo $rtDataCommand
-    eval $rtDataCommand
+    time eval $rtDataCommand
     #curl -X POST -H "Content-Type: application/json" -d "{\"id\": \"$id\", \"oxygenSaturation\": \"$oxygenSaturation\", \"pulseRate\": \"$pulseRate\", \"temperature\": \"$temperature\", \"bloodPressureSystolic\": \"$bloodPressureSystolic\", \"bloodPressureDiastolic\": \"$bloodPressureDiastolic\"}" http://localhost:4000/patients/$id/real-time-data
 
     i=$((i+1))
