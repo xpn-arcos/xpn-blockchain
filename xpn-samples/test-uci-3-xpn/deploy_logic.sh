@@ -7,13 +7,14 @@
 # Expand configuration 
 export XPN_LOCALITY=0
 export XPN_CONF=$HOME/xpn-blockchain/xpn-samples/test-uci-3-xpn/xpn/config.xml
-ssh -L *:3456:localhost:3456 -L *:3457:localhost:3457 tester005@10.119.12.168 &
+#ssh -L *:3456:localhost:3456 -L *:3457:localhost:3457 tester005@10.119.12.168 &
 
-sleep 30
+#sleep 30
 
 # Ask for number of patients
 echo "Introduce number of patients"
-read numPatients
+#read numPatients
+numPatients=150
 
 # Validate number of patients
 if ! [[ "$numPatients" =~ ^[0-9]+$ ]]; then
