@@ -19,7 +19,6 @@ type SmartContract struct {
 type Patient struct {
 	ID          string  `json:"ID"`
 	FirstName   string  `json:"FirstName"`
-	MiddleName  string  `json:"MiddleName"`
 	LastName    string  `json:"LastName"`
 	BirthDate   string  `json:"BirthDate"`
 	BirthPlace  string  `json:"BirthPlace"`
@@ -97,8 +96,7 @@ func (s *SmartContract) validatePatient(patient Patient) error {
 
 
 // CreatePatient creates a new patient with given details.
-func (s *SmartContract) CreatePatient(ctx contractapi.TransactionContextInterface, id string, firstName string, middleName string, 
-	lastName string, birthDate string, birthPlace string, weight string, height string) error {
+func (s *SmartContract) CreatePatient(ctx contractapi.TransactionContextInterface, id string, firstName string, lastName string, birthDate string, birthPlace string, weight string, height string) error {
 	
 	weightFloat, err := strconv.ParseFloat(weight, 64)
     if err != nil {
@@ -123,7 +121,6 @@ func (s *SmartContract) CreatePatient(ctx contractapi.TransactionContextInterfac
 	patient := Patient{
 		ID:         id,
 		FirstName:  firstName,
-		MiddleName: middleName,
 		LastName:   lastName,
 		BirthDate:  birthDate,
 		BirthPlace: birthPlace,
@@ -166,8 +163,7 @@ func (s *SmartContract) ReadPatient(ctx contractapi.TransactionContextInterface,
 }
 
 // UpdatePatient updates an existing patient in the world state with provided parameters.
-func (s *SmartContract) UpdatePatient(ctx contractapi.TransactionContextInterface, id string, firstName string, middleName string, 
-	lastName string, birthDate string, birthPlace string, weight string, height string) error {
+func (s *SmartContract) UpdatePatient(ctx contractapi.TransactionContextInterface, id string, firstName string, lastName string, birthDate string, birthPlace string, weight string, height string) error {
 	
 	weightFloat, err := strconv.ParseFloat(weight, 64)
     if err != nil {
@@ -191,7 +187,6 @@ func (s *SmartContract) UpdatePatient(ctx contractapi.TransactionContextInterfac
 	patient := Patient{
 		ID:         id,
 		FirstName:  firstName,
-		MiddleName: middleName,
 		LastName:   lastName,
 		BirthDate:  birthDate,
 		BirthPlace: birthPlace,
