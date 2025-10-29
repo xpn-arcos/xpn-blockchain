@@ -1,0 +1,5 @@
+[partition]
+bsize = 512k
+replication_level = 0
+partition_name = xpn
+server_url = sck_server://localhost/xpn

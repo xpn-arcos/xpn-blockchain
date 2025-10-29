@@ -6,7 +6,8 @@
 
 # Ask for number of patients
 echo "Introduce number of patients"
-read numPatients
+#read numPatients
+numPatients=150
 
 # Validate number of patients
 if ! [[ "$numPatients" =~ ^[0-9]+$ ]]; then
