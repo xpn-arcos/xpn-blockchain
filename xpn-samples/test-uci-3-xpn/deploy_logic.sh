@@ -4,6 +4,13 @@
 # Bogdan Gabriel Hortea
 # Diego Camarmas Alonso
 
+# Expand configuration 
+export XPN_LOCALITY=0
+export XPN_CONF=$HOME/xpn-blockchain/xpn-samples/test-uci-3-xpn/xpn/config.xml
+ssh -L *:3456:localhost:3456 -L *:3457:localhost:3457 tester005@10.119.12.168 &
+
+sleep 30
+
 # Ask for number of patients
 echo "Introduce number of patients"
 read numPatients
@@ -76,12 +83,11 @@ for ((i=1; i<=numPatients; i++)); do
         echo $((transaction_id+1)) > "$TRANSACTION_ID"
     } 200>"$LOCK_FILE"
 
-    #export XPN_CONF=$HOME/dcamarma/tmp/config.${SLURM_JOBID}.xml
-    #LD_PRELOAD=$HOME/dcamarma/bin/xpn/lib/xpn_bypass.somkdir /tmp/expand/xpn/$patient_id
-    #file_hash=$(LD_PRELOAD=$HOME/dcamarma/bin/xpn/lib/xpn_bypass.so python3 write_data_xpn.py /tmp/expand/xpn/$patient_id/patient.txt "{\"id\":\"1\", \"patientId\":\"$patient_id\", \"firstName\":\"$firstName\", \"lastName\":\"$lastName\", \"birthDate\":\"$birthDate\", \"birthPlace\":\"$birthPlace\", \"weight\":\"$weight\", \"height\":\"$height\"}")
+    LD_PRELOAD=$HOME/bin/xpn/lib/xpn_bypass.so mkdir /tmp/expand/xpn/$patient_id
+    file_hash=$(LD_PRELOAD=$HOME/bin/xpn/lib/xpn_bypass.so python3 write_data_xpn.py /tmp/expand/xpn/$patient_id/patient.txt "{\"id\":\"1\", \"patientId\":\"$patient_id\", \"firstName\":\"$firstName\", \"lastName\":\"$lastName\", \"birthDate\":\"$birthDate\", \"birthPlace\":\"$birthPlace\", \"weight\":\"$weight\", \"height\":\"$height\"}")
     
-    mkdir /tmp/expand/xpn/$patient_id
-    file_hash=$(python3 write_data_xpn.py /tmp/expand/xpn/$patient_id/patient.txt "{\"id\":\"$transaction_id\", \"patientId\":\"$patient_id\", \"firstName\":\"$firstName\", \"lastName\":\"$lastName\", \"birthDate\":\"$birthDate\", \"birthPlace\":\"$birthPlace\", \"weight\":\"$weight\", \"height\":\"$height\"}")
+    #mkdir /tmp/expand/xpn/$patient_id
+    #file_hash=$(python3 write_data_xpn.py /tmp/expand/xpn/$patient_id/patient.txt "{\"id\":\"$transaction_id\", \"patientId\":\"$patient_id\", \"firstName\":\"$firstName\", \"lastName\":\"$lastName\", \"birthDate\":\"$birthDate\", \"birthPlace\":\"$birthPlace\", \"weight\":\"$weight\", \"height\":\"$height\"}")
 
     peer chaincode invoke -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com --tls --cafile "${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem" -C mychannel -n basic --peerAddresses localhost:7051 --tlsRootCertFiles "${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt" --peerAddresses localhost:9051 --tlsRootCertFiles "${PWD}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt" -c "{\"function\":\"CreateXpnTransaction\",\"Args\":[\"$transaction_id\", \"$file_hash\", \"/tmp/expand/xpn/$patient_id/patient.txt\"]}"
 
@@ -100,9 +106,9 @@ for ((i=1; i<=numPatients; i++)); do
         echo $((transaction_id+1)) > "$TRANSACTION_ID"
     } 200>"$LOCK_FILE"
 
-    #export XPN_CONF=$HOME/dcamarma/tmp/config.${SLURM_JOBID}.xml
-    #file_hash=$(LD_PRELOAD=$HOME/dcamarma/bin/xpn/lib/xpn_bypass.so python3 write_data_xpn.py /tmp/expand/xpn/$patient_id/contract.txt "{\"id\":\"1\", \"patientId\":\"$patient_id\", \"minOxygenSaturation\":\"95\", \"maxOxygenSaturation\":\"100\", \"minPulseRate\":\"60\", \"maxPulseRate\":\"100\", \"minTemperature\":\"35.5\", \"maxTemperature\":\"38\", \"minBloodPressureSystolic\":\"120\", \"maxBloodPressureSystolic\":\"180\", \"minBloodPressureDiastolic\":\"80\", \"maxBloodPressureDiastolic\":\"120\"}")
-    file_hash=$(python3 write_data_xpn.py /tmp/expand/xpn/$patient_id/contract.txt "{\"id\":\"$transaction_id\", \"patientId\":\"$patient_id\", \"minOxygenSaturation\":\"95\", \"maxOxygenSaturation\":\"100\", \"minPulseRate\":\"60\", \"maxPulseRate\":\"100\", \"minTemperature\":\"35.5\", \"maxTemperature\":\"38\", \"minBloodPressureSystolic\":\"120\", \"maxBloodPressureSystolic\":\"180\", \"minBloodPressureDiastolic\":\"80\", \"maxBloodPressureDiastolic\":\"120\"}")
+    file_hash=$(LD_PRELOAD=$HOME/bin/xpn/lib/xpn_bypass.so python3 write_data_xpn.py /tmp/expand/xpn/$patient_id/contract.txt "{\"id\":\"1\", \"patientId\":\"$patient_id\", \"minOxygenSaturation\":\"95\", \"maxOxygenSaturation\":\"100\", \"minPulseRate\":\"60\", \"maxPulseRate\":\"100\", \"minTemperature\":\"35.5\", \"maxTemperature\":\"38\", \"minBloodPressureSystolic\":\"120\", \"maxBloodPressureSystolic\":\"180\", \"minBloodPressureDiastolic\":\"80\", \"maxBloodPressureDiastolic\":\"120\"}")
+    
+    #file_hash=$(python3 write_data_xpn.py /tmp/expand/xpn/$patient_id/contract.txt "{\"id\":\"$transaction_id\", \"patientId\":\"$patient_id\", \"minOxygenSaturation\":\"95\", \"maxOxygenSaturation\":\"100\", \"minPulseRate\":\"60\", \"maxPulseRate\":\"100\", \"minTemperature\":\"35.5\", \"maxTemperature\":\"38\", \"minBloodPressureSystolic\":\"120\", \"maxBloodPressureSystolic\":\"180\", \"minBloodPressureDiastolic\":\"80\", \"maxBloodPressureDiastolic\":\"120\"}")
 
     peer chaincode invoke -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com --tls --cafile "${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem" -C mychannel -n basic --peerAddresses localhost:7051 --tlsRootCertFiles "${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt" --peerAddresses localhost:9051 --tlsRootCertFiles "${PWD}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt" -c "{\"function\":\"CreateXpnTransaction\",\"Args\":[\"$transaction_id\", \"$file_hash\", \"/tmp/expand/xpn/$patient_id/contract.txt\"]}"
 
@@ -121,9 +127,9 @@ for ((i=1; i<=numPatients; i++)); do
         echo $((transaction_id+1)) > "$TRANSACTION_ID"
     } 200>"$LOCK_FILE"
 
-    #export XPN_CONF=$HOME/dcamarma/tmp/config.${SLURM_JOBID}.xml
-    #file_hash=$(LD_PRELOAD=$HOME/dcamarma/bin/xpn/lib/xpn_bypass.so python3 write_data_xpn.py /tmp/expand/xpn/$patient_id/diagnosis.txt "{\"id\":\"1\", \"patientId\":\"$patient_id\", \"oxygenSaturationDiagnosis\":\"None\", \"pulseRateDiagnosis\":\"None\", \"temperatureDiagnosis\":\"None\", \"bloodPressureDiagnosis\":\"None\"}")
-    file_hash=$(python3 write_data_xpn.py /tmp/expand/xpn/$patient_id/diagnosis.txt "{\"id\":\"$transaction_id\", \"patientId\":\"$patient_id\", \"oxygenSaturationDiagnosis\":\"None\", \"pulseRateDiagnosis\":\"None\", \"temperatureDiagnosis\":\"None\", \"bloodPressureDiagnosis\":\"None\"}")
+    file_hash=$(LD_PRELOAD=$HOME/bin/xpn/lib/xpn_bypass.so python3 write_data_xpn.py /tmp/expand/xpn/$patient_id/diagnosis.txt "{\"id\":\"1\", \"patientId\":\"$patient_id\", \"oxygenSaturationDiagnosis\":\"None\", \"pulseRateDiagnosis\":\"None\", \"temperatureDiagnosis\":\"None\", \"bloodPressureDiagnosis\":\"None\"}")
+    
+    #file_hash=$(python3 write_data_xpn.py /tmp/expand/xpn/$patient_id/diagnosis.txt "{\"id\":\"$transaction_id\", \"patientId\":\"$patient_id\", \"oxygenSaturationDiagnosis\":\"None\", \"pulseRateDiagnosis\":\"None\", \"temperatureDiagnosis\":\"None\", \"bloodPressureDiagnosis\":\"None\"}")
 
     peer chaincode invoke -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com --tls --cafile "${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem" -C mychannel -n basic --peerAddresses localhost:7051 --tlsRootCertFiles "${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt" --peerAddresses localhost:9051 --tlsRootCertFiles "${PWD}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt" -c "{\"function\":\"CreateXpnTransaction\",\"Args\":[\"$transaction_id\", \"$file_hash\", \"/tmp/expand/xpn/$patient_id/diagnosis.txt\"]}"
     
