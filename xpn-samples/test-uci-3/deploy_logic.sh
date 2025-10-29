@@ -19,14 +19,9 @@ fi
 for ((i=1; i<=numPatients; i++)); do
 
     id="$i"
-    #firstName=$(shuf -n 1 patient_data/first-names.txt)
-    #middleName=$(shuf -n 1 patient_data/middle-names.txt)
-    #lastName=$(shuf -n 1 patient_data/last-names.txt)
-    #birthPlace=$(shuf -n 1 patient_data/countries.txt) 
-    firstName="name"
-    middleName="middleName"
-    lastName="lastName"
-    birthPlace="birthPlace"
+    firstName=$(shuf -n 1 patient_data/first-names.txt)
+    lastName=$(shuf -n 1 patient_data/last-names.txt)
+    birthPlace=$(shuf -n 1 patient_data/countries.txt)  
     oxygenSaturation=none
     pulseRate=none
     temperature=none
@@ -65,12 +60,12 @@ for ((i=1; i<=numPatients; i++)); do
 
 
     # Create patient
-    command="peer chaincode invoke -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com --tls --cafile \"${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem\" -C mychannel -n basic --peerAddresses localhost:7051 --tlsRootCertFiles \"${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt\" --peerAddresses localhost:9051 --tlsRootCertFiles \"${PWD}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt\" -c '{\"function\":\"CreatePatient\",\"Args\":[\"$id\", \"$firstName\", \"$middleName\", \"$lastName\", \"$birthDate\", \"$birthPlace\", \"$weight\", \"$height\"]}'"
+    command="peer chaincode invoke -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com --tls --cafile \"${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem\" -C mychannel -n basic --peerAddresses localhost:7051 --tlsRootCertFiles \"${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt\" --peerAddresses localhost:9051 --tlsRootCertFiles \"${PWD}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt\" -c '{\"function\":\"CreatePatient\",\"Args\":[\"$id\", \"$firstName\", \"$lastName\", \"$birthDate\", \"$birthPlace\", \"$weight\", \"$height\"]}'"
     echo -e "GENERATING PATIENT WITH ID $id ... \n"
     echo $command
     eval $command
     # POST patient
-    #curl -X POST -H "Content-Type: application/json" -d "{\"id\": \"$id\", \"firstName\": \"$firstName\", \"middleName\": \"$middleName\", \"lastName\": \"$lastName\", \"birthDate\": \"$birthDate\", \"birthPlace\": \"$birthPlace\", \"weight\": \"$weight\", \"height\": \"$height\", \"oxygenSaturation\": \"$oxygenSaturation\", \"pulseRate\": \"$pudiagnosislseRate\", \"temperature\": \"$temperature\", \"bloodPressureSystolic\": \"$bloodPressureSystolic\", \"bloodPressureDiastolic\": \"$bloodPressureDiastolic\",  \"oxygenSaturationDiagnosis\": \"$oxygenSaturationDiagnosis\",  \"pulseRateDiagnosis\": \"$pulseRateDiagnosis\",  \"temperatureDiagnosis\": \"$temperatureDiagnosis\",  \"bloodPressureDiagnosis\": \"$bloodPressureDiagnosis\"}" http://localhost:4000/patients
+    #curl -X POST -H "Content-Type: application/json" -d "{\"id\": \"$id\", \"firstName\": \"$firstName\", \"lastName\": \"$lastName\", \"birthDate\": \"$birthDate\", \"birthPlace\": \"$birthPlace\", \"weight\": \"$weight\", \"height\": \"$height\", \"oxygenSaturation\": \"$oxygenSaturation\", \"pulseRate\": \"$pudiagnosislseRate\", \"temperature\": \"$temperature\", \"bloodPressureSystolic\": \"$bloodPressureSystolic\", \"bloodPressureDiastolic\": \"$bloodPressureDiastolic\",  \"oxygenSaturationDiagnosis\": \"$oxygenSaturationDiagnosis\",  \"pulseRateDiagnosis\": \"$pulseRateDiagnosis\",  \"temperatureDiagnosis\": \"$temperatureDiagnosis\",  \"bloodPressureDiagnosis\": \"$bloodPressureDiagnosis\"}" http://localhost:4000/patients
     sleep 5
 
     # Create contract
