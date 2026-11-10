@@ -6,8 +6,8 @@
 
 # Ask for number of patients
 echo "Introduce number of patients"
-#read numPatients
-numPatients=150
+read numPatients
+#numPatients=150
 
 # Validate number of patients
 if ! [[ "$numPatients" =~ ^[0-9]+$ ]]; then
@@ -21,7 +21,7 @@ for ((i=1; i<=numPatients; i++)); do
     id="$i"
     firstName=$(shuf -n 1 patient_data/first-names.txt)
     lastName=$(shuf -n 1 patient_data/last-names.txt)
-    birthPlace=$(shuf -n 1 patient_data/countries.txt)  
+    birthPlace=$(shuf -n 1 patient_data/countries.txt)
     oxygenSaturation=none
     pulseRate=none
     temperature=none
@@ -39,9 +39,9 @@ for ((i=1; i<=numPatients; i++)); do
     # determine number of days in a month
     case $month in
         4|6|9|11) daysInMonth=30;;
-        2) 
+        2)
             if (( year % 4 == 0 && (year % 100 != 0 || year % 400 == 0) )); then
-                daysInMonth=29 
+                daysInMonth=29
             else
                 daysInMonth=28
             fi
@@ -55,7 +55,7 @@ for ((i=1; i<=numPatients; i++)); do
 
     #Randon weight and height
     height=$(bc <<< "scale=2; 1.4 + 0.8 * $RANDOM / 32768")  # Between 1.4 and 2.2m
-    weight=$(( RANDOM % 101 + 50 ))      
+    weight=$(( RANDOM % 101 + 50 ))
 
 
 

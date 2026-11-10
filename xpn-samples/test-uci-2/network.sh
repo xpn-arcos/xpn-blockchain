@@ -326,22 +326,49 @@ function networkDown() {
 
   COMPOSE_FILE_BASE=$temp_compose
 
-  # Don't remove the generated artifacts -- note, the ledgers are always removed
+  # 1. Stop containers via docker compose
+  if [ "${CONTAINER_CLI}" == "docker" ]; then
+    docker compose ${COMPOSE_FILES} down --volumes --remove-orphans 2>/dev/null || true
+  elif [ "${CONTAINER_CLI}" == "podman" ]; then
+    podman-compose ${COMPOSE_FILES} down --volumes 2>/dev/null || true
+  else
+    docker-compose ${COMPOSE_FILES} down --volumes --remove-orphans 2>/dev/null || true
+  fi
+
+  # 2. Force-stop and remove any active network containers (Orderer, Peer, CA, CC)
+  if [ "${CONTAINER_CLI}" == "docker" ]; then
+    docker rm -f $(docker ps -aq --filter "name=orderer") 2>/dev/null || true
+    docker rm -f $(docker ps -aq --filter "name=peer") 2>/dev/null || true
+    docker rm -f $(docker ps -aq --filter "name=ca") 2>/dev/null || true
+    docker rm -f $(docker ps -aq --filter "name=dev-") 2>/dev/null || true
+
+    # 3. Force-remove associated volumes to wipe ledger state completely
+    docker volume rm $(docker volume ls -q --filter "name=orderer") 2>/dev/null || true
+    docker volume rm $(docker volume ls -q --filter "name=peer") 2>/dev/null || true
+    docker volume rm $(docker volume ls -q --filter "name=ca") 2>/dev/null || true
+    docker volume rm $(docker volume ls -q --filter "name=docker_") 2>/dev/null || true
+    docker volume prune -f
+  fi
+
+  # Don't remove the generated artifacts if mode is restart
   if [ "$MODE" != "restart" ]; then
-    # Bring down the network, deleting the volumes
-    ${CONTAINER_CLI} volume rm docker_orderer.example.com docker_peer0.org1.example.com docker_peer0.org2.example.com
-    #Cleanup the chaincode containers
-    clearContainers
-    #Cleanup images
-    removeUnwantedImages
-    # remove orderer block and other channel configuration transactions and certs
+    # 4. Clean up auxiliary containers and CC images
+    clearContainers 2>/dev/null || true
+    removeUnwantedImages 2>/dev/null || true
+
+    # 5. Clean up crypto material, blocks, and certificates
     ${CONTAINER_CLI} run --rm -v "$(pwd):/data" busybox sh -c 'cd /data && rm -rf system-genesis-block/*.block organizations/peerOrganizations organizations/ordererOrganizations'
-    ## remove fabric ca artifacts
-    ${CONTAINER_CLI} run --rm -v "$(pwd):/data" busybox sh -c 'cd /data && rm -rf organizations/fabric-ca/org1/msp organizations/fabric-ca/org1/tls-cert.pem organizations/fabric-ca/org1/ca-cert.pem organizations/fabric-ca/org1/IssuerPublicKey organizations/fabric-ca/org1/IssuerRevocationPublicKey organizations/fabric-ca/org1/fabric-ca-server.db'
-    ${CONTAINER_CLI} run --rm -v "$(pwd):/data" busybox sh -c 'cd /data && rm -rf organizations/fabric-ca/org2/msp organizations/fabric-ca/org2/tls-cert.pem organizations/fabric-ca/org2/ca-cert.pem organizations/fabric-ca/org2/IssuerPublicKey organizations/fabric-ca/org2/IssuerRevocationPublicKey organizations/fabric-ca/org2/fabric-ca-server.db'
-    ${CONTAINER_CLI} run --rm -v "$(pwd):/data" busybox sh -c 'cd /data && rm -rf organizations/fabric-ca/ordererOrg/msp organizations/fabric-ca/ordererOrg/tls-cert.pem organizations/fabric-ca/ordererOrg/ca-cert.pem organizations/fabric-ca/ordererOrg/IssuerPublicKey organizations/fabric-ca/ordererOrg/IssuerRevocationPublicKey organizations/fabric-ca/ordererOrg/fabric-ca-server.db'
-    # remove channel and script artifacts
-    ${CONTAINER_CLI} run --rm -v "$(pwd):/data" busybox sh -c 'cd /data && rm -rf channel-artifacts log.txt *.tar.gz'
+
+    ## Fabric CA artifacts
+    ${CONTAINER_CLI} run --rm -v "$(pwd):/data" busybox sh -c 'cd /data && rm -rf organizations/fabric-ca/org1/msp organizations/fabric-ca/org1/*.pem organizations/fabric-ca/org1/*.db'
+    ${CONTAINER_CLI} run --rm -v "$(pwd):/data" busybox sh -c 'cd /data && rm -rf organizations/fabric-ca/org2/msp organizations/fabric-ca/org2/*.pem organizations/fabric-ca/org2/*.db'
+    ${CONTAINER_CLI} run --rm -v "$(pwd):/data" busybox sh -c 'cd /data && rm -rf organizations/fabric-ca/ordererOrg/msp organizations/fabric-ca/ordererOrg/*.pem organizations/fabric-ca/ordererOrg/*.db'
+
+    # 6. Clean up channel artifacts content and logs
+    ${CONTAINER_CLI} run --rm -v "$(pwd):/data" busybox sh -c 'cd /data && rm -rf channel-artifacts/* log.txt *.tar.gz'
+
+    # 7. Re-create empty channel-artifacts directory
+    mkdir -p channel-artifacts
   fi
 }
 
