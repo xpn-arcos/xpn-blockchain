@@ -1,7 +1,7 @@
 #!/bin/bash
 #Authors
 # Bogdan Gabriel Hortea
-# Diego Camarmas Alonso
+#
 
 id="$1"
 endTime=$(($(date +%s) + 120)) #120s, same value as in generate_data
@@ -23,7 +23,7 @@ while [ $(date +%s) -lt $endTime ]; do
     bloodPressureDiagnosis=$(echo $diagnosis | jq -r '.BloodPressureDiagnosis')
 
     #post it
-    curl -X POST -H "Content-Type: application/json" -d "{\"id\": \"$id\", \"oxygenSaturationDiagnosis\": \"$oxygenSaturationDiagnosis\", \"pulseRateDiagnosis\": \"$pulseRateDiagnosis\", \"temperatureDiagnosis\": \"$temperatureDiagnosis\", \"bloodPressureDiagnosis\": \"$bloodPressureDiagnosis\"}" http://localhost:4000/patients/$id/diagnosis
+    #curl -X POST -H "Content-Type: application/json" -d "{\"id\": \"$id\", \"oxygenSaturationDiagnosis\": \"$oxygenSaturationDiagnosis\", \"pulseRateDiagnosis\": \"$pulseRateDiagnosis\", \"temperatureDiagnosis\": \"$temperatureDiagnosis\", \"bloodPressureDiagnosis\": \"$bloodPressureDiagnosis\"}" http://localhost:4000/patients/$id/diagnosis
 
     #update each 5 seconds
     sleep 5

@@ -2,7 +2,6 @@
 
 #Authors
 # Bogdan Gabriel Hortea
-# Diego Camarmas Alonso
 
 # Print the usage message
 function printHelp() {

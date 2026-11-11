@@ -1,4 +1,4 @@
-version: '3.7'
+version: "3.7"
 
 volumes:
   orderer.example.com:
@@ -13,7 +13,6 @@ networks:
     name: fabric_test
 
 services:
-
   orderer.example.com:
     container_name: orderer.example.com
     image: hyperledger/fabric-orderer:latest
@@ -182,9 +181,6 @@ services:
     networks:
       - test
 
-
-
-
   peer0.org1.example.com:
     container_name: peer0.org1.example.com
     image: hyperledger/fabric-peer:latest
@@ -215,7 +211,7 @@ services:
       - CORE_CHAINCODE_EXECUTETIMEOUT=300s
     volumes:
       - ../organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com:/etc/hyperledger/fabric
-      - peer0.org1.example.com:/var/hyperledger/production
+      - /tmp/expand:/var/hyperledger/production
     working_dir: /root
     command: peer node start
     ports:

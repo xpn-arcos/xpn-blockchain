@@ -16,16 +16,9 @@ type SmartContract struct {
 	contractapi.Contract
 }
 
-type XpnTransaction struct {
-	ID          string  `json:"ID"`
-	Hash        string  `json:"Hash"`
-	Path        string  `json:"Path"`
-}
-
 type Patient struct {
 	ID          string  `json:"ID"`
 	FirstName   string  `json:"FirstName"`
-	MiddleName  string  `json:"MiddleName"`
 	LastName    string  `json:"LastName"`
 	BirthDate   string  `json:"BirthDate"`
 	BirthPlace  string  `json:"BirthPlace"`
@@ -69,104 +62,6 @@ type Contract struct {
 	MaxBloodPressureDiastolic	float64  `json:"MaxBloodPressureDiastolic"`	
 }
 
-// ---------------------------------------------------- XpnTransaction -------------------------------------------------------------- //
-// Validations for the XpnTransaction parameters
-func (s *SmartContract) validateXpnTransaction(xpntransaction XpnTransaction) error {
-	// Check if ID is empty
-	if strings.TrimSpace(xpntransaction.ID) == "" {
-		return fmt.Errorf("ID must be non-empty")
-	}
-
-	//check ID is a number
-	if _, err := strconv.Atoi(xpntransaction.ID); err != nil {
-		return fmt.Errorf("ID must be a number")
-	}
-
-	// Check if Hash is empty
-	if strings.TrimSpace(xpntransaction.Hash) == "" {
-		return fmt.Errorf("Hash must be non-empty")
-	}
-
-	// Check if Path is empty
-	if strings.TrimSpace(xpntransaction.Path) == "" {
-		return fmt.Errorf("Path must be non-empty")
-	}
-
-	return nil
-}
-
-
-// CreateXpnTransaction creates a new xpntransaction with given details.
-func (s *SmartContract) CreateXpnTransaction(ctx contractapi.TransactionContextInterface, id string, hash string, path string) error {
-	
-	exists, err := s.XpnTransactionExists(ctx, id)
-	if err != nil {
-		return err
-	}
-	if exists {
-		return fmt.Errorf("Cannot create xpntransaction. XpnTransaction with id %s already exists", id)
-	}
-
-
-	xpntransaction := XpnTransaction{
-		ID:   id,
-		Hash: hash,
-		Path: path,
-	}
-
-	// validate the xpntransaction
-	err = s.validateXpnTransaction(xpntransaction)
-	if err != nil {
-		return err
-	}
-	
-	xpntransactionJSON, err := json.Marshal(xpntransaction)
-	if err != nil {
-		return err
-	}
-
-	return ctx.GetStub().PutState(id, xpntransactionJSON)
-}
-
-
-// ReadXpnTransaction returns the xpntransaction stored in the world state with given id.
-func (s *SmartContract) ReadXpnTransaction(ctx contractapi.TransactionContextInterface, id string) (*XpnTransaction, error) {
-	xpntransactionJSON, err := ctx.GetStub().GetState(id)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read xpntransaction from world state: %v", err)
-	}
-	if xpntransactionJSON == nil {
-		return nil, fmt.Errorf("Cannot read xpntransaction. XpnTransaction with id %s does not exist", id)
-	}
-
-	var xpntransaction XpnTransaction
-	err = json.Unmarshal(xpntransactionJSON, &xpntransaction)
-	if err != nil {
-		return nil, err
-	}
-
-	return &xpntransaction, nil
-}
-
-// XpnTransactionExists returns true when xpntransaction with given ID exists in world state.
-func (s *SmartContract) XpnTransactionExists(ctx contractapi.TransactionContextInterface, id string) (bool, error) {
-	xpntransactionJSON, err := ctx.GetStub().GetState(id)
-	if err != nil {
-		return false, fmt.Errorf("failed to read xpntransaction from world state: %v", err)
-	}
-
-	return xpntransactionJSON != nil, nil
-}
-
-
-
-
-
-
-
-
-
-
 // ---------------------------------------------------- PATIENTS -------------------------------------------------------------- //
 // Validations for the patient parameters
 func (s *SmartContract) validatePatient(patient Patient) error {
@@ -201,8 +96,7 @@ func (s *SmartContract) validatePatient(patient Patient) error {
 
 
 // CreatePatient creates a new patient with given details.
-func (s *SmartContract) CreatePatient(ctx contractapi.TransactionContextInterface, id string, firstName string, middleName string, 
-	lastName string, birthDate string, birthPlace string, weight string, height string) error {
+func (s *SmartContract) CreatePatient(ctx contractapi.TransactionContextInterface, id string, firstName string, lastName string, birthDate string, birthPlace string, weight string, height string) error {
 	
 	weightFloat, err := strconv.ParseFloat(weight, 64)
     if err != nil {
@@ -227,7 +121,6 @@ func (s *SmartContract) CreatePatient(ctx contractapi.TransactionContextInterfac
 	patient := Patient{
 		ID:         id,
 		FirstName:  firstName,
-		MiddleName: middleName,
 		LastName:   lastName,
 		BirthDate:  birthDate,
 		BirthPlace: birthPlace,
@@ -270,8 +163,7 @@ func (s *SmartContract) ReadPatient(ctx contractapi.TransactionContextInterface,
 }
 
 // UpdatePatient updates an existing patient in the world state with provided parameters.
-func (s *SmartContract) UpdatePatient(ctx contractapi.TransactionContextInterface, id string, firstName string, middleName string, 
-	lastName string, birthDate string, birthPlace string, weight string, height string) error {
+func (s *SmartContract) UpdatePatient(ctx contractapi.TransactionContextInterface, id string, firstName string, lastName string, birthDate string, birthPlace string, weight string, height string) error {
 	
 	weightFloat, err := strconv.ParseFloat(weight, 64)
     if err != nil {
@@ -295,7 +187,6 @@ func (s *SmartContract) UpdatePatient(ctx contractapi.TransactionContextInterfac
 	patient := Patient{
 		ID:         id,
 		FirstName:  firstName,
-		MiddleName: middleName,
 		LastName:   lastName,
 		BirthDate:  birthDate,
 		BirthPlace: birthPlace,

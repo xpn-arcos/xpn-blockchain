@@ -1,4 +1,4 @@
-version: '3.7'
+version: "3.7"
 
 volumes:
   orderer.example.com:
@@ -13,8 +13,7 @@ networks:
     attachable: true
 
 services:
-
-  orderer-example-com: 
+  orderer-example-com:
     image: hyperledger/fabric-orderer:latest
     hostname: orderer.example.com
     environment:
@@ -58,9 +57,9 @@ services:
       restart_policy:
         condition: on-failure
 
-  peer0-org1-example-com: 
+  peer0-org1-example-com:
     image: hyperledger/fabric-peer:latest
-    hostname: peer0.org1.example.com 
+    hostname: peer0.org1.example.com
     environment:
       - FABRIC_CFG_PATH=/etc/hyperledger/peercfg
       - FABRIC_LOGGING_SPEC=INFO
@@ -102,9 +101,9 @@ services:
       restart_policy:
         condition: on-failure
 
-  peer0-org2-example-com: 
+  peer0-org2-example-com:
     image: hyperledger/fabric-peer:latest
-    hostname: peer0.org2.example.com 
+    hostname: peer0.org2.example.com
     environment:
       - FABRIC_CFG_PATH=/etc/hyperledger/peercfg
       - FABRIC_LOGGING_SPEC=INFO
@@ -146,9 +145,9 @@ services:
       restart_policy:
         condition: on-failure
 
-  peer0-org3-example-com: 
+  peer0-org3-example-com:
     image: hyperledger/fabric-peer:latest
-    hostname: peer0.org3.example.com 
+    hostname: peer0.org3.example.com
     environment:
       - FABRIC_CFG_PATH=/etc/hyperledger/peercfg
       - FABRIC_LOGGING_SPEC=INFO
